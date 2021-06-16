@@ -8,6 +8,7 @@
 from losses import loss_func
 import torch
 import cv2
+from tqdm import tqdm
 
 def collate_fn(batch):
     return tuple(zip(*batch))
@@ -29,9 +30,10 @@ def target_process(batch,gride_size = 7):
 
 
 
-def train_one_epoch(model, optimizer, train_loader, device, epoch, print_freq,scheduler):
+def train_one_epoch(model, optimizer, train_loader, device, epoch,scheduler):
     model.train()
-    for iter, batch in enumerate(train_loader):
+    pbar = tqdm(enumerate(train_loader),total=len(train_loader))
+    for iter, batch in pbar:
         optimizer.zero_grad()
         # 取图片
         inputs = input_process(batch)
@@ -44,12 +46,7 @@ def train_one_epoch(model, optimizer, train_loader, device, epoch, print_freq,sc
         loss.backward()
         optimizer.step()
         # print(torch.cat([outputs.detach().view(1,5),labels.view(1,5)],0).view(2,5))
-        if iter % 10 == 0:
-            #    print(torch.cat([outputs.detach().view(1,5),labels.view(1,5)],0).view(2,5))
-            print("epoch{}, iter{}, loss: {}, lr: {}".format(epoch, iter, loss.data.item(),
-                                                             optimizer.state_dict()['param_groups'][0]['lr']))
-
-        # print("Finish epoch {}, time elapsed {}".format(epoch, time.time() - ts))
-        # print("*"*30)
-        # val(epoch)
-    scheduler.step()
+        description = f"epoch:{epoch}    iter:{iter}    loss:{loss.data.item()}    lr:{optimizer.state_dict()['param_groups'][0]['lr']}"
+        pbar.set_description(description)
+    if scheduler is not None:
+        scheduler.step()
