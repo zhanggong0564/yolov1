@@ -3,17 +3,27 @@
 # @Time : 2021/6/16 11:33
 # @Author : zhanggong
 # @Email : 601806353@qq.com
-# @File : train.py
+# @File : utils.py
 # @Software: PyCharm
 from losses import loss_func
 import torch
+import cv2
+
+def collate_fn(batch):
+    return tuple(zip(*batch))
 
 
 def input_process(batch):
-    batch_size = len(batch[0])
-    input_batch = torch.zeros(batch_size,3,448,448)
+    batch_size = len(batch[0])##batch[0],image batch[1] = target
+    inputs_batch = torch.zeros(batch_size,3,448,448)
     for i in range(batch_size):
         inputs_tmp = batch[0][i]
+        inputs_tmp1 = cv2.resize(inputs_tmp.permute([1,2,0]).numpy(),(448,448)) #chw-->w,h,c
+        inputs_tmp2 = torch.tensor(inputs_tmp1).permute([2, 0, 1])
+        inputs_batch[i:i+1,...] = torch.unsqueeze(inputs_tmp2,0)#add axis
+    return inputs_batch
+def target_process(batch,gride_size = 7):
+    pass
 
 
 
