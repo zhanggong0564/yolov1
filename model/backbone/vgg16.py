@@ -21,7 +21,7 @@ class VGG(nn.Module):
                     layers+=[conv2d,nn.BatchNorm2d(v),nn.ReLU(inplace=True)]
                 else:
                     layers+=[conv2d,nn.ReLU(inplace=True)]
-            in_channels = v
+                in_channels = v
 
         self.features = nn.Sequential(*layers)
         self.avgpool = nn.AdaptiveAvgPool2d((7,7))

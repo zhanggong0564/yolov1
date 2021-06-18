@@ -10,7 +10,7 @@ from model.backbone.vgg16 import VGG
 
 
 class YOLOV1(nn.Module):
-    def __init__(self,backbone):
+    def __init__(self,backbone,n_class=1):
        super(YOLOV1,self).__init__()
        cfg = [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M']
        if backbone=='vgg':
@@ -22,8 +22,9 @@ class YOLOV1(nn.Module):
           nn.Linear(512*7*7,4096),
           nn.ReLU(True),
           nn.Dropout(),
-          nn.Linear(4096,1470),
+          nn.Linear(4096,245),
        )
+       self.n_class = n_class
        for m in self.modules():
            if isinstance(m,nn.Conv2d):
                nn.init.kaiming_normal_(m.weight,mode='fan_out',nonlinearity='relu')
@@ -41,5 +42,5 @@ class YOLOV1(nn.Module):
         x = x.view(x.size(0),-1)
         x = self.detector(x)
         b,_ = x.shape
-        x = x.view(b,7,7,5)
+        x = x.view(b,7,7,4+self.n_class)
         return x

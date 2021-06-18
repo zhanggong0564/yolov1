@@ -52,8 +52,8 @@ def  loss_func(outputs,labels):
                 conf_loss_matrix[bi, wi, hi] = loss_confidence
                 geo_loss_matrix[bi, wi, hi] = loss_geo
                 loss_matrix[bi, wi, hi] = loss_tmp
-    print(geo_loss_matrix)
-    print(outputs[0, :, :, 0] > 0.5)
+    # print(geo_loss_matrix)
+    # print(outputs[0, :, :, 0] > 0.5)
     return loss, loss_matrix, geo_loss_matrix, conf_loss_matrix
 
 
